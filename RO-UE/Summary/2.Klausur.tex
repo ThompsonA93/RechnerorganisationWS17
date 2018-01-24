@@ -1,0 +1,89 @@
+% Preamble
+\documentclass[11pt]{article}
+
+    % Packages
+    \usepackage{a4wide}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[naustrian]{babel}
+    
+    \usepackage{enumerate}
+    \usepackage{scrextend}
+    \usepackage{graphicx}
+    
+    \title{Rechnerorganisation - 2. Klausurvorbereitung}
+    \author{Auer Thomas}
+    \date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\graphicspath{{graphics/}}
+
+\section{Übungsblatt 5}
+    \subsection{Multi-Cycle Datenpfad: lw-Instruktion}
+    \textbf{Erläutern Sie die Ausführung der lw-Instruktion (load word) für den Multi-Cycle-Datenpfad.
+    Welche Vorteile bietet der Multi-Cycle-Datenpfad gegenüber dem Single-Cycle-Datenpfad?
+    Diskutieren Sie dies anhand dieses Befehls.}
+
+    \subsection{Grundlagen Pipelining}
+    \textbf{Gegeben seien vier unterschiedliche Prozessoren, die sich in der Anzahl der Pipelinestufen und
+    der Taktrate unterscheiden:\\}
+    \begin{center}
+        \begin{tabular}{l|l|l}
+        Prozessor & Pipelinestufen & Taktrate \\\hline
+        A & 1 & 100 MHz \\
+        B & 4 & 800 MHz \\
+        C & 12 & 1,5 GHz \\
+        D & 20 & 3,2 GHz \\
+        \end{tabular}
+    \end{center}
+    \textbf{(a) Bestimmen Sie für jeden Prozessor die Latenz der einzelnen Instruktionen.}
+    
+    \textbf{Wie lange dauert die Ausführung von 400.000 voneinander unabhängigen Instruktionen
+    auf jedem der angeführten Prozessoren? Bestimmen Sie die Performance und den
+    Speedup verglichen mit Prozessor A ohne Pipelining. (Sie können annehmen, dass es
+    keine Stalls gibt.)}
+
+    \subsection{Pipelining: Graphische Darstellung}
+
+    \textbf{Beantworten Sie folgende Fragen anhand der Beispiel-Pipeline-Architektur der VO (Kapitel 3.2).\\\\
+    (a) Bestimmen Sie die Anzahl der Pipelinestufen, die Taktdauer und die Taktfrequenz der
+    Beispiel-Pipeline unter Annahme der Angaben auf VO-Folie 3-44 (Ausführungszeiten der
+    Funktionseinheiten). Wie lange dauert die Ausführung eines einzigen Befehls auf der
+    Beispiel-Pipeline?\\\\
+    (b) Angenommen es treten keine Leertakte (stalls) auf, welchen Speedup erreicht die
+    Beispiel-Pipeline aus a) gegenüber einem Single-Cycle Datenpfad, der aus den gleichen
+    Funktionsregistern besteht?\\
+    Seite 1 von 2\\\\
+    (c) Auf der Pipeline wird folgende Befehlssequenz ausgeführt:\\
+    \begin{verbatim}
+    and     $10, $2, $3
+    sw      $11, 4($3)
+    \end{verbatim}
+    Stellen Sie die Ausführung der oben angeführten Befehlssequenz durch die Beispiel-Pipeline
+    wie auf VO-Folie 3-45 grafisch dar (untere Abbildung). Achten Sie insbesondere auf die
+    zeitliche Anordnung der Zugriffe auf die Registereinheit! Wie lange dauert die Ausführung der
+    Befehlssequenz?}
+
+
+    \subsection{Pipelining: Daten- und Kontrollabhängigkeiten}
+    \textbf{Gegeben sei folgendes Code-Fragment:}
+
+
+    \section{Übungsblatt 6}
+
+
+\section{Übungsblatt 7}
+
+
+\section{Übungsblatt 8}
+
+
+\section{Übungsblatt 9}
+
+
+\section{Übungsblatt 10}
+
+    
+\end{document}

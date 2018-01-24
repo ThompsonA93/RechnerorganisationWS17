@@ -1,0 +1,200 @@
+########################################################################
+Machen Sie sich mit den im Moodle zur Verfügung gestellten Unterlagen zum MIPS-Assembler vertraut und beantworten Sie folgende Fragestellungen: 
+
+a.) Erklären sie die Speicheraufteilung der MIPS-Architektur.
+
+Die Allgemeine Konvention ist wie folgt:
+
+Bezeichnung des Reg.	RegisterNummer	
+$zero			0
+	Register der stets 0 enthält.
+
+$at			1
+	Assembler Temporary, reserviert für Pseudo-Instruktionen
+
+$v0 			2
+	Expression Evaluations
+
+$v1 			3
+	Subfunct return values
+
+$a0 .. $a3		4..7
+	Arguement registers for passing parameters to Functions
+	- Holds Value or adress to x-vals
+	- Not saved across func calls
+
+$t0 .. $t7 + $t8, $t9	8..15, 24, 25
+	Temporary Registers
+	- Caller saved
+	
+$s0 .. $s7		16..23
+	Saved Registers
+	- Callee saved
+
+$k0 .. $k1		26..27
+	Interrupt/Trap handler
+	- Reserved per default
+
+$gp			28		# Startet nicht mit Wert 0
+	Global pointer. Points to the middle of the 64K block of mem in the static data segment.
+
+$sp			29		# Startet mit sehr hohen Wert
+	Stack pointer. Points to the last location of the stack
+
+$fp			30
+	Frame Pointer.  
+$ra			31
+	Register for Return Adress	
+
+pc .. Program counter					
+hi & lo .. Used for multiplication & division, never directly adressable. Content is however accessed via mfhi and mflo. F.ex.:
+	multu $t0, $t1 <=> hilo <- $t0 * $t1
+The higher 32 Bits are placed into Hi, the lower part into LO  
+
+Graphical Memory Layout:
+---------------------------------------------------------------------
+|				    | 	      |	       |	    |
+|  Stack >>		<< Dynamics | Statics |  Text  |  Reserved  |
+|				    | 	      |	       |	    |
+---------------------------------------------------------------------
+^				      ^		        ^$sp				      $gp		pc
+
+##### Mitschrift
+local var: Stack
+global var: Static data
+Programmcode: Text segment
+
+Max. 2^6 Befehle <=> OPCode: 6 Bit
+
+DataOverflow 
+	> Stack: 	7fff fffc
+	> Dynamics:	
+	> Statics:	x000 0000 
+
+b.) Was versteht man unter I, R und J Befehlen und erkläre deren Befehlsformat anhand von drei Befehlen.
+
+### Der I-Befehl .. The immediate instructions
+	Der I-Typ-Befehl beschreibt eine Operation von 2 Registern mithilfe eines Immediates, einer Zahl von 16 Bit.
+Generell: 
+	OP	  .. mit 6 Bit. Beschreibt die auszuführende Operation 
+	RS 	  .. mit 5 Bit.
+	RT 	  .. mit 5 Bit.
+	Immediate .. mit 16 Bit, beschreibt eine ganze Zahl
+	
+ Z.B.:	
+	- addi $s3, $s3, 4 <=> Wert in $s3 wird um 4 erhöht
+	- addi $s2, $s1, -1 <=> Wert in $s2 ist Wert in $s1 plus -1
+		.. ist gleich subi $s2, $s1, 1
+	- andi $t1, $t2, 12 <=> Wert in $t1 ist Wert in $t2 bitwise-And 12
+		.. auch: ori, xori, 
+
+### Der R-Befehl .. the Representing Instructions
+	Der R-Typ Befehl beschreibt eine Operation von 3 Registern. 
+Generell:
+	OP	.. mit 6 Bit. Bei R-Typ IMMER 000000
+	RS	.. mit 5 Bit. Register erster Zahl
+	RT	.. mit 5 Bit. Register zweiter Zahl
+	RD	.. mit 5 Bit. Ergebnisregister
+	SHAMT	.. mit 5 Bit. Shiftwert (Nur bei Shift-Befehlen)
+	FUNCT	.. mit 6 Bit. Beschreibt die Auszuführende Operation via ALU
+		
+Ad Funct.:
+	add $t0, $t1, $t2
+	.. besitzt:			in Bit
+		OP = 0			000000		
+		rs = $t1 .. sei 17	10001
+		rt = $t2 .. sei 18	10010
+		rd = $t0 .. sei 6	00110
+		shamt = 0 		00000
+		funct = 0x20 		100000
+		<=> 000000 10001 10010 00110 00000 100000 
+
+ Beispiele:
+	- and|or|nor|xor $v0, $t1, $s1
+	- div $t1, $a0, $a2
+	- rem $t0, $a1, $v1
+
+### Der J-Befehl .. The Jump instructions
+	Der J-Typ Befehl wird zum Springen innerhalb des Programmcodes genutzt und verschiebt theoretisch den Befehlszeiger auf die jeweilige Adresse. Üblicherweise verläuft die Angabe via spezifiziertem Label, wird aber via Offset berechnet.
+Generell:
+	OP	.. 6 Bit
+	Offset 	.. variabel.
+		bne/beq .. I-Format .. 16 Bit relative Offset
+		j	.. J-Format .. 26 Bit absolute Offset
+			.. Für je 32-Bit Adressen.
+
+For bne/beq:
+	Current 32 bit PC 
+	+ 		'4'	 
+	+ (Sign extended 16 Bit Immediate + shift left by 2 bits)	
+	---------------
+	Next 32bit PC == Target adress
+
+For J:
+	  Current 32 bit PC
+	    & 26 Bit Offset |00
+	-----------------------
+	Rest PC|26Bit Offset|00
+
+F.ex.:
+     * 12 bne R0, R1, 16 .. springt zu Adresse 80
+	<=>
+	12 + 4 + (16*4) = 80 
+		     ^
+		     Shift left by 2 <=> Mult by 4
+
+     * 8 j 2 .. Bei PC = 20 => 8 
+	<=>
+	PC=[PC(31:28):2]<<2 <=> in Bit-Darstellung:
+	PC:	0000000000000000000000000010100
+	J:	0000000000000000000000000000010|00
+		----------------------------------
+	PCxJ:	00000|00000000000000000000000010|00
+		^>PC	^>Jumptarget		 ^Shiftleft
+	PCxJ<<2:00000|00000000000000000000001000|00	<=> '8'
+
+c.) Siehe a.)
+ GPR :: 10 Temporäre, Rest Statisch
+ FramePointer: Funktionsaufrufe
+
+########################################################################
+MIPS-Instruktionen
+2.)
+	a.)Geben Sie den Maschinencode für folgende Instruktion in Hexadezimaldarstellung an, und erklären Sie die Bedeutung der einzelnen Bitfelder des Maschinencodes:
+
+addi $s0, $s1, 16
+
+.. via MIPS:
+Im Text-Segment lässt sich auslesen welcher Code genutzt wird.
+	addi $s0, $s1, 16 .. hat den Hexadezimalcode 0x22300010
+
+### 
+	op-code: 8
+	$s1 = 17
+	$s0 = 16
+	imm. = 16
+
+		--------------------------------------------	
+ welcher Binär: |0010 00|10 001|1 0000| 0000 0000 0001 0000| ist.
+		--------------------------------------------		
+		^OP	^RS	^RT	^Immediate .. '1' an 4.
+		OP: Auszuführende Operation: ADDI
+		RS: Adresse von s0
+		RT: Adresse von s0+'1' = s1
+		Immediate: = 16 = 2^4
+
+	2	2	3	0	0	0	1	0
+<=> x22300010
+###
+	b.) Was ist der Unterschied zwischen den Befehlen shift right arithmetic (sra) und shift right logical (srl)? Warum gibt es keinen Befehl shift left arithmetic?
+	- Bei SRA und SRL unterscheidet man das most-significant Bit, Big Endian und Little Endian.
+	- SRA setzt significant Bit nach, SRL setzt 0er.
+		... letztere wäre eine Inkompatibilität mit Minus-zahlen, welche stets mit 1 beginnen und damit die Konsistenz des Zweierkomplements zerschlagen <=> Überläufe
+	
+### 
+-- 010
+srl: 001
+sra: 001 
+-- 101
+srl: 001
+sra: 110

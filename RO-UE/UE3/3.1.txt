@@ -1,0 +1,32 @@
+########################################################################
+Wie erfolgt die Parameterübergabe an Prozeduren? Welche Rolle spielen 
+dabei Register und Stack?
+
+Parameterübergaben innerhalb eines MIPS-Programmes erfolgen über die
+ Register a0 bis a4.
+Sind mehr als wie 5 Parameter zu übergeben, so sind Parameter, im
+ Sinne der Konvention als Pointer auf Adressen zu übergeben, in welcher
+die Parameter liegen.
+
+Rückgabeparameter sind in V0 und V1 abzulegen.
+
+########################################################################
+Was versteht man unter einem procedure call frame? Unter welchen Umständen kann darauf verzichtet werden?
+
+Ein Procedure Call ist ein Funktionsaufruf, initiiert mit JAL und JR, dementsprechend ist der Procedure Call Frame das Scope in welchem diese Funktion operiert, mit all dessen syscalls und ALUs
+
+########################################################################
+Worin besteht der Unterschied zwischen caller-saved bzw. callee-saved Registern? Erklären Sie anhand der Konventionen den Gebrauch der Register $v0, $a0, $t2, $sp, $fp, $ra und $s0.
+
+Caller-Saved-Register: Der Caller einer Funktion ist die Funktion, in welcher die derzeitige Funktion aufgerufen wird. Caller-saved registers, Volatile Registers sind die Temporären Register. Diese müssen von der jeweiligen Funktion zwischengespeichert werden, ferner die Register genutzt werden.
+Callee-Saved-Register: Der Callee einer Funktion ist die Funktion, die derzeit aufgerufen wird. Zu den Callee-Saved Registern zählen die non-volatile Registern, welche also langlebige Variablen beinhalten.
+
+>>> $v0 - Gilt als der Rückgaberegister. Sobald eine Funktion aufgerufen wird, kann man den Rückgabewert in diesem Register erwarten.
+>>> $a0 - Gilt als Übergabeparameterregister. Bevor eine Funktion aufgerufen wird soll man Parameter, welche für Operationen innerhalb der aufzurufenden Funktion notwendig sind, in diesen Registern speichern.
+>>> $t2 - Gilt als Temporary-Register. Es dient der Zwischenspeicherung von Kalkulationen und man darf nie davon ausgehen, dass diese Register gleich bleiben.
+>>> $sp - Ist der Stackpointer, das wohl mächtigste Werkzeug in Assembler. Mit seiner Hilfe kann man dutzende Konstanten speichern und wiederrufen.
+>>> $fp - Der Frame Pointer. Tendenziell redundant aufgrund des Stackpointers. Aufgrund der MIPS Calling Convention sollte man auch nie den Code von Stack Pointer auf Frame pointer umschreiben.
+>>> $ra - RücksprungAdresse, prinzipiell ein Register für das Zwischenspeichern der Rücksprungadresse bei einem JAL-Call.
+>>> $s0 - SaveRegister. Vom Prinzip her sind diese Register ähnlich static bzw. const Variablen. Allerdings gelten diese als Caller-Saved, sprich eine Subroutine darf diese Werte nicht verändern.
+
+

@@ -1,0 +1,136 @@
+########################################################################
+1. Gebe die RTL-Beschreibungen für folgende MIPS-Instruktionen an:
+
+add	rs rt rd
+	R[rd] <- R[rs] + R[rt]		PC <- PC +4
+
+ori 
+	* ori $rs, $rt, 100000
+	R[rs] <- R[rt] | sign_ext(signed_i16)	PC <- PC + 4
+
+	#### NULLER WERDEN BEI S_E VORNE ANGEHÄNGT 
+
+	* ori $rs, 1000
+	R[rs] <- R[rs] | sign_ext(unsign_i16)	PC <- PC +4
+
+lw
+	* lw $rs, (space)
+	R[rs] <- MEM[&space]
+
+	* lw $rs, 100
+	R[rs] <- MEM[&100]
+
+	* lw $rs, 100(space)
+	R[rs] <- MEM[&100(Space)]
+
+	#### lw :: R[rt] <- MEM[R[rs] + S_E(i16)]		
+	#### Wert vor ('Space' = rs) ist OFFSET
+	#### Wert in (Space) ist RS
+	#### For fucks sake
+ 
+bne ~~ beq
+	* beq $rs, $rt, label
+			==
+	* beq $rs, 100, label
+	if(R[rs] != R[rt]): PC<-PC+4+[SE(i16)<<2] 
+	else: PC<-PC+4
+
+jal
+	* jal label
+	1. R[RA] <- PC+4
+	2. PC<-[Erste 3 Bits von PC+4].[&Target].00
+
+########################################################################
+2.) sw $rs x(space) ... x∈N, z.B. i16 oder i32	|| Hint: i32 not possible <=> i16 only.
+ 	MEM[R[rs] + sign_extend(offset)] <- R[rt]
+
+Control-Unit:
+	RegDst: X	<-> We save to memory, not register, thus X
+	Branch: 0	<-> We do not jump, but we cant ignore that, otherwise we jump somewhere
+	MemRead: 0	<-> We do not read from Memory
+	MemToReg: X	<-> We do not write from Memory to register. Thus we do not care
+	ALUOp: X	<-> We do not calculate
+	MemWrite: 1	<-> We write to Memory
+	ALUSrc: 1	<-> We do not Calc
+	RegWrite: 0	<-> We do not write to register, we cannot ignore that or we Write to register
+
+
+
+######
+RegDst: X- Interessiert uns nicht da wir in Register nicht schreiben X
+Branch: 0 - Wir branchen nicht
+MemRead: 0 - Wir lesen nichts aus Mem
+MemToReg: X
+ALUOP 00
+MemWrite 1
+AluSRC 1
+RegWrite 0
+
+########################################################################
+3.)"add store word"
+	OP	RS	RT	RD	SH	FN
+	6	5	5	5	5	6	.. á Bit
+
+SW:   	0x2B
+ADD:						0x2
+
+=> RTL:
+	MEM[SE(R[rd])] <- R[rs] + R[rt]		PC <- PC+4
+
+b.) Control-Unit:
+	RegDst: X	<=> We calculate Destination via rd
+	Branch: 0	<=> Dont jump
+	MemRead: 0	<=> Dont read from Memory
+	MemToReg: 0	<=> Dont write to Register from memory
+	ALUOp: addsw	<=> mem[$rd]<- $rs, $rt 
+	MEMWrite: 1	<=> Store to Memory
+	ALUSrc: add	<=> Add $rs, $rt
+	RegWrite: 0	<=> Dont write to register
+	addsw: 1	<=> Execute the new Instruction	
+
+c.) Wegen dem gesetzten OP von SW darf OPcode nicht 0 sein.
+Add: 000000 rs | rt | rd | sh | 100000
+Sw:  101011 rs | rt | value_i16
+
+Wäre der OP-Code 00 <=> Definition als R-Befehl. Setze OP-Code nicht 00
+
+Siehe: http://alumni.cs.ucr.edu/~vladimir/cs161/mips.html
+
+
+##### Hint: Default-Wert immer auf 0 setzen
+RegDst: X
+Branch: 0
+MemRead: 0
+MemToReg: X
+ALUOp: 10 	für R-Befehle >> 
+MemWrite: 1
+ALUSrc: 0
+RegWrite: 0
+AddSw: 1
+
+########################################################################
+4.) "jump to register on not equal"
+	OP	RS	RT	RD	SH	FN
+	6	5	5	5	5	6
+R:bne	X					000101	
+J:j	000010					X
+
+jne	000010					000101
+
+jrne :: jrne $rd, $rs, $rt
+	If(R[rs] != R[rt]): PC <- PC+4+SE(R[rd])
+		else: PC<-PC+4
+
+Control Unit:
+	RegDst: X
+	ALUSrc: 1	<=> R[rs] minus R[rt]
+	Branch: 0	<=> If Zero -> Sets 1 => Passes
+	MemRead: X
+	MemToReg: X
+	ALUOp: Add
+	MemWrite: X
+	ALUSrc: Add
+	RegWrite: 0
+	JRNE: 1
+
+#### PC <- R[rd] << 2

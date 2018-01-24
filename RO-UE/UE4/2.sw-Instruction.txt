@@ -1,0 +1,12 @@
+* sw $rs x(space) ... x∈N, z.B. i16 oder i32
+ 	MEM[SE(x)(space)] <- R[rs]
+
+Don't-care-Werte der Controll Unit:
+	RegDst: 	X <=> RS = 25-21
+	Branch: 	0
+	MemRead:	0
+	MemToReg:	0
+	ALUOp:		X
+	MemWrite:	1
+	ALUSrc:		X
+	RegWrite:	1

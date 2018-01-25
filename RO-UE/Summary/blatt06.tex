@@ -7,17 +7,17 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 {
 	\ttfamily
 	\begin{tabular}{l llll}
-		loop: & l.d      & \$f4  & 0(\$t0) &      \\
-		      & sub.d    & \$f6  & \$f4    & \$f0 \\
-		      & l.d      & \$f8  & 0(\$t1) &      \\
-		      & mul.d    & \$f10 & \$f6    & \$f8 \\
-		      & add.d    & \$f12 & \$f10   & \$f2 \\
-		      & s.d      & \$f12 & 0(\$t2) &      \\
-		      & addi     & \$t2  & \$t2    & -8   \\
-		      & addi     & \$t1  & \$t1    & -8   \\
-		      & addi     & \$t0  & \$t0    & -8   \\
-		      & bne \$t0 & \$t4  & loop    &      \\
-		      & nop      &       &         &
+		loop: & l.d   & \$f4  & 0(\$t0) &      \\
+		      & sub.d & \$f6  & \$f4    & \$f0 \\
+		      & l.d   & \$f8  & 0(\$t1) &      \\
+		      & mul.d & \$f10 & \$f6    & \$f8 \\
+		      & add.d & \$f12 & \$f10   & \$f2 \\
+		      & s.d   & \$f12 & 0(\$t2) &      \\
+		      & addi  & \$t2  & \$t2    & -8   \\
+		      & addi  & \$t1  & \$t1    & -8   \\
+		      & addi  & \$t0  & \$t0    & -8   \\
+		      & bne   & \$t0  & \$t4    & loop \\
+		      & nop   &       &         &
 	\end{tabular}
 }
 
@@ -64,28 +64,59 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 		Ergebniselement & 9      & 11            & 20         \\ \hline
 	\end{tabular}
 
-	
+	\pagebreak	
 	\item \textbf{Optimieren Sie den Code durch Umordnen von Befehlen so, dass er auf dem gegebenen Prozessor möglichst schnell ausgeführt wird. Wie viele Takte werden für die Verarbeitung eines Ergebniselements benötigt?}
 	
 {
 	\ttfamily
 	\begin{tabular}{l llll}
-		loop:                        & l.d      & \$f4                     & 0(\$t0)               &                \\
-		                             & l.d      & \$f8                     & 0(\$t1)               &                \\
-		                             & sub.d    & \color{Maroon}\$f6       & \$f4                  & \$f0           \\
-		                             & addi     & \$t2                     & \$t2                  & \color{red} -8 \\
-		                             & addi     & \$t1                     & \$t1                  & -8             \\
-		\color{Maroon}+1 Stall       & mul.d    & \color{NavyBlue}\$f10    & \color{Maroon}\$f6    & \$f8           \\
-		                             & addi     & \$t0                     & \$t0                  & -8             \\
-		\color{NavyBlue}+2 Stalls    & add.d    & \color{ForestGreen}\$f12 & \color{NavyBlue}\$f10 & \$f2           \\
-		\color{ForestGreen}+1 Stalls & bne \$t0 & \$t4                     & loop                  &                \\
-		                             & s.d      & \color{ForestGreen}\$f12 & \color{red}8(\$t2)    &
+		loop:                        & l.d   & \$f4                     & 0(\$t0)               &                \\
+		                             & l.d   & \$f8                     & 0(\$t1)               &                \\
+		                             & sub.d & \color{Maroon}\$f6       & \$f4                  & \$f0           \\
+		                             & addi  & \$t2                     & \$t2                  & \color{red} -8 \\
+		                             & addi  & \$t1                     & \$t1                  & -8             \\
+		\color{Maroon}+1 Stall       & mul.d & \color{NavyBlue}\$f10    & \color{Maroon}\$f6    & \$f8           \\
+		                             & addi  & \$t0                     & \$t0                  & -8             \\
+		\color{NavyBlue}+2 Stalls    & add.d & \color{ForestGreen}\$f12 & \color{NavyBlue}\$f10 & \$f2           \\
+		\color{ForestGreen}+1 Stalls & bne   & \$t0                     & \$t4                  & loop           \\
+		                             & s.d   & \color{ForestGreen}\$f12 & \color{red}8(\$t2)    &
 	\end{tabular}
 }
 	\begin{tabular}{llll}
 		\hline
 		                & Stalls & Instruktionen & $ \Sigma $ \\ \hline
 		Ergebniselement & 4      & 10            & 14         \\ \hline
+	\end{tabular}
+
+
+\item \textbf{Rollen Sie die Schleife zweimal ab und ordnen Sie den Code so um, dass er auf dem gegebenen Prozessor möglichst schnell ausgeführt wird. Wie viele Takte werden nun pro	Ergebniselement benötigt?}
+
+{
+	\ttfamily
+	\begin{tabular}{l llll}
+		loop: & l.d   & \$f4  & 0(\$t0)             &                \\
+		      & l.d   & \$f14 & -8(\$t0)            &                \\
+		      & sub.d & \$f6  & \$f4                & \$f0           \\
+		      & sub.d & \$f16 & \$f14               & \$f0           \\
+		      & l.d   & \$f8  & 0(\$t1)             &                \\
+		      & l.d   & \$f18 & -8(\$t1)            &                \\
+		      & mul.d & \$f10 & \$f6                & \$f8           \\
+		      & mul.d & \$f20 & \$f16               & \$f8           \\
+		      & addi  & \$t2  & \$t2                & \color{red}-16 \\
+		      & addi  & \$t1  & \$t1                & \color{red}-16 \\
+		      & add.d & \$f12 & \$f10               & \$f2           \\
+		      & add.d & \$f22 & \$f20               & \$f22          \\
+		      & addi  & \$t0  & \$t0                & -16            \\
+		      & s.d   & \$f12 & \color{red}16(\$t2) &                \\
+		      & bne   & \$t0  & \$t4                & loop           \\
+		      & s.d   & \$f22 & \color{red}8(\$t2)  &
+	\end{tabular}
+}
+	\begin{tabular}{llll}
+		\hline
+		           & Stalls & Instruktionen & $ \Sigma $ \\ \hline
+		2 Elemente & 0      & 16            & 16         \\
+		1 Element  & 0      & 8             & 8          \\ \hline
 	\end{tabular}
 
 \end{enumerate}

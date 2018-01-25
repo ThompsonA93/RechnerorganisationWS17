@@ -1,3 +1,7 @@
+\pagebreak
+\section{Übungsblatt 6}
+\setcounter{subsection}{4}
+\subsection{Loop Unrolling}
 Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Takt Branch Delay) ausgeführt. Die Latenzen zwischen abhängigen Befehlen sind in Tabelle \ref{tbl:stalls1} aufgelistet.
 
 {
@@ -34,3 +38,32 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 	\caption{Latenzen zwischen abhängigen Befehlen}
 	\label{tbl:stalls1}
 \end{table}
+
+\begin{enumerate}[(a)]
+	\item \textbf{Identifizieren Sie alle Daten- und Kontrollabhängigkeiten, die Stalls	verursachen\footnote{ohne Forwarding-Einheit}. Wie viele Taktzyklen werden für die
+	Ausführung des gesamten Codes bzw. pro Ergebniselement\footnote{d.h. nur die Schleife}
+	benötigt?}
+
+	{
+		\ttfamily
+		\begin{tabular}{l llll}
+			loop:                       & l.d   & \color{blue}\$f4        & 0(\$t0)               &                  \\
+			\color{blue} +1 Stall       & sub.d & \color{brown}\$f6       & \color{blue}\$f4      & \$f0             \\
+			                            & l.d   & \color{cyan}\$f8        & 0(\$t1)               &                  \\
+			\color{brown}+2 Stalls      & mul.d & \color{Mulberry}\$f10   & \color{brown}\$f6     & \color{cyan}\$f8 \\
+			\color{Mulberry}+3 Stalls   & add.d & \$f12                   & \color{Mulberry}\$f10 & \$f2             \\
+			                            & s.d   & \$f12                   & 0(\$t2)               &                  \\
+			                            & addi  & \$t2                    & \$t2                  & -8               \\
+			                            & addi  & \$t1                    & \$t1                  & -8               \\
+			                            & addi  & \color{Bittersweet}\$t0 & \$t0                  & -8               \\
+			\color{Bittersweet}+1 Stall & bne   & \color{Bittersweet}\$t0 & \$t4                  & loop             \\
+			                            & nop   &                         &                       &
+		\end{tabular}
+	}
+	\begin{tabular}{llll}
+		\hline
+		                & Stalls & Instruktionen & $ \Sigma $ \\ \hline
+		Ergebniselement & 7      & 11            & 18         \\ \hline
+	\end{tabular}
+	\textit{Achtung: Stimmt noch nicht mit Musterlösung überein!}
+\end{enumerate}

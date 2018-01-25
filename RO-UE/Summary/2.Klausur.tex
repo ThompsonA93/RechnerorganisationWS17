@@ -20,12 +20,14 @@
 \maketitle
 \tableofcontents
 \graphicspath{{graphics/}}
-
+\pagebreak
 \section{Übungsblatt 5}
     \subsection{Multi-Cycle Datenpfad: lw-Instruktion}
     \textbf{Erläutern Sie die Ausführung der lw-Instruktion (load word) für den Multi-Cycle-Datenpfad.
     Welche Vorteile bietet der Multi-Cycle-Datenpfad gegenüber dem Single-Cycle-Datenpfad?
     Diskutieren Sie dies anhand dieses Befehls.}
+
+    \includegraphics[width=\textwidth]{LW_MCDp}
 
     \subsection{Grundlagen Pipelining}
     \textbf{Gegeben seien vier unterschiedliche Prozessoren, die sich in der Anzahl der Pipelinestufen und
@@ -71,14 +73,30 @@
 
     \subsection{Pipelining: Daten- und Kontrollabhängigkeiten}
     \textbf{Gegeben sei folgendes Code-Fragment:}
-    \begin{verbatim}
+
+    \begin{center}
         
-        
-    \end{verbatim}
+    \includegraphics[width=0.5\textwidth]{5_4}
     
+    \end{center}
+
+    \textbf{(a) Identifizieren Sie alle Daten- und Kontrollabhängigkeiten, die Leerzyklen (Stalls)
+    verursachen (Annahme: ohne Forwarding-Einheit). Wie viele Taktzyklen werden für die
+    Ausführung des gesamten Codes bzw. pro Ergebniselement (d.h. nur die Schleife)
+    benötigt?\\\\
+    (b) Welche aus den Datenabhängigkeiten resultierenden Pipeline-Konflikte können durch
+    eine Forwarding-Einheit gelöst werden? Wie viele Taktzyklen benötigt die Ausführung der
+    Befehlssequenz mit Forwarding-Einheit für die Ausführung des gesamten Codes bzw. pro
+    Ergebniselement (d.h. nur die Schleife)? Wo und warum muss die Hardware Leerzyklen
+    (d.h. Stalls) einfügen?\\\\
+    (c) Ordnen Sie den Code so um, dass er auf einer modifizierten Beispiel-Pipeline mit
+    Unterstützung für „Delayed Branching“ (d.h. Branch-Delay-Slot) möglichst rasch
+    ausgeführt wird (und die Semantik erhalten bleibt). Wie viele Taktzyklen werden in diesem
+    Fall für die Ausführung des gesamten Codes bzw. pro Ergebniselement (d.h. nur die
+    Schleife) benötigt? Wie hoch ist der erzielte Speedup relativ zu bzw. b)?}
 
 
-    \section{Übungsblatt 6}
+\section{Übungsblatt 6}
 
 
 \section{Übungsblatt 7}

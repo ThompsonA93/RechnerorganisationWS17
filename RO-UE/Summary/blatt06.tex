@@ -40,9 +40,7 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 \end{table}
 
 \begin{enumerate}[(a)]
-	\item \textbf{Identifizieren Sie alle Daten- und Kontrollabhängigkeiten, die Stalls	verursachen\footnote{ohne Forwarding-Einheit}. Wie viele Taktzyklen werden für die
-	Ausführung des gesamten Codes bzw. pro Ergebniselement\footnote{d.h. nur die Schleife}
-	benötigt?}
+	\item \textbf{Identifizieren Sie alle Daten- und Kontrollabhängigkeiten, die Stalls verursachen. Wie viele Takte werden für ein Ergebniselement\footnote{durch s.d gespeicherter Wert} benötigt?}
 
 	{
 		\ttfamily
@@ -65,4 +63,29 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 		                & Stalls & Instruktionen & $ \Sigma $ \\ \hline
 		Ergebniselement & 9      & 11            & 20         \\ \hline
 	\end{tabular}
+
+	
+	\item \textbf{Optimieren Sie den Code durch Umordnen von Befehlen so, dass er auf dem gegebenen Prozessor möglichst schnell ausgeführt wird. Wie viele Takte werden für die Verarbeitung eines Ergebniselements benötigt?}
+	
+{
+	\ttfamily
+	\begin{tabular}{l llll}
+		loop:                        & l.d      & \$f4                     & 0(\$t0)               &                \\
+		                             & l.d      & \$f8                     & 0(\$t1)               &                \\
+		                             & sub.d    & \color{Maroon}\$f6       & \$f4                  & \$f0           \\
+		                             & addi     & \$t2                     & \$t2                  & \color{red} -8 \\
+		                             & addi     & \$t1                     & \$t1                  & -8             \\
+		\color{Maroon}+1 Stall       & mul.d    & \color{NavyBlue}\$f10    & \color{Maroon}\$f6    & \$f8           \\
+		                             & addi     & \$t0                     & \$t0                  & -8             \\
+		\color{NavyBlue}+2 Stalls    & add.d    & \color{ForestGreen}\$f12 & \color{NavyBlue}\$f10 & \$f2           \\
+		\color{ForestGreen}+1 Stalls & bne \$t0 & \$t4                     & loop                  &                \\
+		                             & s.d      & \color{ForestGreen}\$f12 & \color{red}8(\$t2)    &
+	\end{tabular}
+}
+	\begin{tabular}{llll}
+		\hline
+		                & Stalls & Instruktionen & $ \Sigma $ \\ \hline
+		Ergebniselement & 4      & 10            & 14         \\ \hline
+	\end{tabular}
+
 \end{enumerate}

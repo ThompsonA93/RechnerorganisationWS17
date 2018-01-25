@@ -51,8 +51,8 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 			\color{blue} +1 Stall       & sub.d & \color{brown}\$f6       & \color{blue}\$f4      & \$f0             \\
 			                            & l.d   & \color{cyan}\$f8        & 0(\$t1)               &                  \\
 			\color{brown}+2 Stalls      & mul.d & \color{Mulberry}\$f10   & \color{brown}\$f6     & \color{cyan}\$f8 \\
-			\color{Mulberry}+3 Stalls   & add.d & \$f12                   & \color{Mulberry}\$f10 & \$f2             \\
-			                            & s.d   & \$f12                   & 0(\$t2)               &                  \\
+			\color{Mulberry}+3 Stalls   & add.d & \color{Orange}\$f12     & \color{Mulberry}\$f10 & \$f2             \\
+			\color{Orange}+2 Stalls     & s.d   & \color{Orange}\$f12     & 0(\$t2)               &                  \\
 			                            & addi  & \$t2                    & \$t2                  & -8               \\
 			                            & addi  & \$t1                    & \$t1                  & -8               \\
 			                            & addi  & \color{Bittersweet}\$t0 & \$t0                  & -8               \\
@@ -63,7 +63,6 @@ Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Tak
 	\begin{tabular}{llll}
 		\hline
 		                & Stalls & Instruktionen & $ \Sigma $ \\ \hline
-		Ergebniselement & 7      & 11            & 18         \\ \hline
+		Ergebniselement & 9      & 11            & 20         \\ \hline
 	\end{tabular}
-	\textit{Achtung: Stimmt noch nicht mit Musterlösung überein!}
 \end{enumerate}

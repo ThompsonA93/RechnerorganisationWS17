@@ -1,0 +1,36 @@
+Folgendes Codefragment wird auf einen Prozessor mit "`Delayed Branching"' (1 Takt Branch Delay) ausgeführt. Die Latenzen zwischen abhängigen Befehlen sind in Tabelle \ref{tbl:stalls1} aufgelistet.
+
+{
+	\ttfamily
+	\begin{tabular}{l llll}
+		loop: & l.d      & \$f4  & 0(\$t0) &      \\
+		      & sub.d    & \$f6  & \$f4    & \$f0 \\
+		      & l.d      & \$f8  & 0(\$t1) &      \\
+		      & mul.d    & \$f10 & \$f6    & \$f8 \\
+		      & add.d    & \$f12 & \$f10   & \$f2 \\
+		      & s.d      & \$f12 & 0(\$t2) &      \\
+		      & addi     & \$t2  & \$t2    & -8   \\
+		      & addi     & \$t1  & \$t1    & -8   \\
+		      & addi     & \$t0  & \$t0    & -8   \\
+		      & bne \$t0 & \$t4  & loop    &      \\
+		      & nop      &       &         &
+	\end{tabular}
+}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{lll}
+		\hline
+		Erzeugender Befehl & Benutzender Befehl & Zwischentakte \\ \hline
+		FP ALU operation   & FP ALU operation   & 3             \\
+		FP ALU operation   & Store FP double    & 2             \\
+		Load FP double     & FP ALU operation   & 1             \\
+		Load FP double     & Store FP double    & 0             \\
+		Load integer       & Integer operation  & 1             \\
+		Load integer       & Branch             & 2             \\
+		Integer operation  & Integer operation  & 0             \\
+		Integer operation  & Branch             & 1             \\ \hline
+	\end{tabular}
+	\caption{Latenzen zwischen abhängigen Befehlen}
+	\label{tbl:stalls1}
+\end{table}
